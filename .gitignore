@@ -1,0 +1,25 @@
+# Entorno virtual
+.venv/
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Variables de entorno / credenciales
+.env
+*.env
+
+# Logs
+logs/
+*.log
+
+# VS Code
+.vscode/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# Windows
+Thumbs.db
+desktop.ini
