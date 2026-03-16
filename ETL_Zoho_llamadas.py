@@ -44,8 +44,10 @@ from sqlalchemy import create_engine
 
 
 # ---------------------------------------------------------------------------
-# Logging — consola + archivo acumulativo (append en cada ejecución)
+# Logging — consola + archivo (última ejecución siempre al inicio del log)
 # ---------------------------------------------------------------------------
+import io as _io
+
 _LOG_DIR = Path(__file__).parent / 'logs'
 _LOG_DIR.mkdir(exist_ok=True)
 
@@ -67,17 +69,15 @@ class _FmtES(logging.Formatter):
 
 _fmt = _FmtES('%(asctime)s | %(levelname)s | %(message)s')
 
+# Buffer en memoria que captura los logs de la ejecución actual
+_run_buffer = _io.StringIO()
+_run_handler = logging.StreamHandler(_run_buffer)
+_run_handler.setFormatter(_fmt)
+_run_handler.setLevel(logging.INFO)
+
 _console = logging.StreamHandler()
 _console.setFormatter(_fmt)
 _console.setLevel(logging.INFO)
-
-_file_handler = logging.FileHandler(
-    filename=_LOG_DIR / 'etl_zoho_llamadas.log',
-    mode='a',
-    encoding='utf-8',
-)
-_file_handler.setFormatter(_fmt)
-_file_handler.setLevel(logging.INFO)
 
 _error_handler = logging.FileHandler(
     filename=_LOG_DIR / 'etl_zoho_llamadas_errores.log',
@@ -87,8 +87,20 @@ _error_handler = logging.FileHandler(
 _error_handler.setFormatter(_fmt)
 _error_handler.setLevel(logging.ERROR)
 
-logging.basicConfig(level=logging.INFO, handlers=[_console, _file_handler, _error_handler])
+logging.basicConfig(level=logging.INFO, handlers=[_console, _run_handler, _error_handler])
 log = logging.getLogger(__name__)
+
+
+def _flush_log_to_file() -> None:
+    """Prepende los logs de esta ejecución al inicio del archivo principal."""
+    _run_handler.flush()
+    nuevo = _run_buffer.getvalue()
+    if not nuevo:
+        return
+    log_path = _LOG_DIR / 'etl_zoho_llamadas.log'
+    existente = log_path.read_text(encoding='utf-8') if log_path.exists() else ''
+    separador = '-' * 80 + '\n'
+    log_path.write_text(nuevo + separador + existente, encoding='utf-8')
 
 
 def log_etl(step: str, status: str, rows: int = 0, msg: str = '') -> None:
@@ -435,6 +447,21 @@ def cargar(df: pd.DataFrame, engine) -> None:
     tabla_fqn = f'{SCHEMA_DESTINO}.{TABLA_DESTINO}'
     log_etl('CARGA', 'START', rows=len(df), msg=tabla_fqn)
 
+    # Deduplicar nombres de columna (SQL Server es case-insensitive: TIPO == Tipo)
+    seen_upper: dict[str, int] = {}
+    new_cols = []
+    for col in df.columns:
+        key = col.upper()
+        if key in seen_upper:
+            seen_upper[key] += 1
+            new_name = f"{col}_{seen_upper[key]}"
+            new_cols.append(new_name)
+            log_etl('CARGA', 'WARNING', msg=f'Columna duplicada renombrada: {col} -> {new_name}')
+        else:
+            seen_upper[key] = 0
+            new_cols.append(col)
+    df.columns = new_cols
+
     with engine.begin() as conn:
         # Carga completa: replace recrea la tabla con el esquema actual del DataFrame.
         # Esto maneja automáticamente cualquier cambio de columnas entre ejecuciones.
@@ -469,14 +496,15 @@ def main() -> None:
         log_etl('ETL', 'SUCCESS')
 
     except Exception as e:
-        log.exception('ETL finalizado con error.')
-        log_etl('ETL', 'ERROR', msg=f'Linea {e.__traceback__.tb_lineno}: {e}')
+        linea = e.__traceback__.tb_lineno if e.__traceback__ else '?'
+        log_etl('ETL', 'ERROR', msg=f'Linea {linea}: {type(e).__name__}: {e}')
         raise
 
     finally:
         if engine is not None:
             engine.dispose()
             log_etl('CONEXION', 'CLOSED')
+        _flush_log_to_file()
 
 
 if __name__ == '__main__':
