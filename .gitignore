@@ -1,0 +1,21 @@
+# Backup repo: solo respalda archivos .pbix y .sql
+
+# Ignorar todo por defecto
+*
+
+# Permitir descender en subdirectorios
+!*/
+
+# Whitelist: tipos de archivo a respaldar
+!*.pbix
+!*.sql
+
+# Archivos especiales del repo
+!.gitignore
+!README.md
+
+# Excluido por superar el límite de 100MB de GitHub
+Dash Ejecución Plan de Negocios/Ejecución Plan de Negocios.pbix
+
+# Power BI Project (formato .pbip): subrepo embebido, no contiene .pbix/.sql
+proyect_test/
