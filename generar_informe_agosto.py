@@ -18,223 +18,22 @@ Estilo: Lineamientos_Visuales_y_Comunicacion_CUN_Word.md
 """
 import sys
 
-from docx import Document
-from docx.shared import Pt, RGBColor, Cm
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.oxml.ns import qn
-from docx.oxml import OxmlElement
+sys.path.insert(0, ".claude/skills/informes-cartera-word")
+from docx.shared import Pt                                       # noqa: E402
+from estilo_cun import (DocumentoCUN, AZUL_MARINO, AZUL_INST,    # noqa: E402
+                        TURQUESA, TEXTO, TIT, CUERPO)
 
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 SALIDA = "Informe_Ejecutivo_Cierre_Agosto_2026.docx"
 
-# ---- Paleta institucional CUN
-AZUL_MARINO = RGBColor(0x0C, 0x23, 0x40)
-AZUL_INST = RGBColor(0x1B, 0x36, 0x5D)
-TURQUESA = RGBColor(0x00, 0x85, 0x9B)
-VERDE_OSC = RGBColor(0x00, 0x7A, 0x33)
-GRIS_INST = RGBColor(0x89, 0x8D, 0x8D)
-TEXTO = RGBColor(0x22, 0x22, 0x22)
-BLANCO = RGBColor(0xFF, 0xFF, 0xFF)
-
-HEX_MARINO = "0C2340"
-HEX_MANZANA = "84BD00"
-HEX_ZEBRA = "F8F9FA"
-HEX_CALLOUT = "F0F4F8"
-
-TIT = "Montserrat"
-CUERPO = "Open Sans"
-
-doc = Document()
-normal = doc.styles["Normal"]
-normal.font.name = CUERPO
-normal.font.size = Pt(10)
-normal.font.color.rgb = TEXTO
-normal._element.rPr.rFonts.set(qn("w:eastAsia"), CUERPO)
-
-for s in doc.sections:
-    s.top_margin = Cm(1.6)
-    s.bottom_margin = Cm(1.3)
-    s.left_margin = Cm(2.2)
-    s.right_margin = Cm(2.0)
-
-
-# ------------------------------------------------------------------ helpers
-def _fuente(run, nombre, size, bold=False, italic=False, color=None):
-    run.font.name = nombre
-    run.font.size = Pt(size)
-    run.bold = bold
-    run.italic = italic
-    if color is not None:
-        run.font.color.rgb = color
-    run._element.rPr.rFonts.set(qn("w:eastAsia"), nombre)
-    return run
-
-
-def shade(cell, hexc):
-    tcPr = cell._tc.get_or_add_tcPr()
-    shd = OxmlElement("w:shd")
-    shd.set(qn("w:val"), "clear")
-    shd.set(qn("w:fill"), hexc)
-    tcPr.append(shd)
-
-
-def borde_izq(par, hexc, ancho=24):
-    """Barra vertical de acento a la izquierda del parrafo (callout)."""
-    pPr = par._p.get_or_add_pPr()
-    pbdr = OxmlElement("w:pBdr")
-    left = OxmlElement("w:left")
-    left.set(qn("w:val"), "single")
-    left.set(qn("w:sz"), str(ancho))
-    left.set(qn("w:space"), "6")
-    left.set(qn("w:color"), hexc)
-    pbdr.append(left)
-    pPr.append(pbdr)
-
-
-def fondo_par(par, hexc):
-    pPr = par._p.get_or_add_pPr()
-    shd = OxmlElement("w:shd")
-    shd.set(qn("w:val"), "clear")
-    shd.set(qn("w:fill"), hexc)
-    pPr.append(shd)
-
-
-def linea_acento(hexc=HEX_MANZANA, ancho=24, after=10):
-    p = doc.add_paragraph()
-    p.paragraph_format.space_before = Pt(2)
-    p.paragraph_format.space_after = Pt(after)
-    pPr = p._p.get_or_add_pPr()
-    pbdr = OxmlElement("w:pBdr")
-    bot = OxmlElement("w:bottom")
-    bot.set(qn("w:val"), "single")
-    bot.set(qn("w:sz"), str(ancho))
-    bot.set(qn("w:space"), "1")
-    bot.set(qn("w:color"), hexc)
-    pbdr.append(bot)
-    pPr.append(pbdr)
-    return p
-
-
-def par(texto="", size=10, bold=False, italic=False, color=TEXTO,
-        fuente=CUERPO, after=5, before=0, align=None, interlineado=1.1):
-    p = doc.add_paragraph()
-    p.paragraph_format.space_after = Pt(after)
-    p.paragraph_format.space_before = Pt(before)
-    p.paragraph_format.line_spacing = interlineado
-    if align is not None:
-        p.alignment = align
-    if texto:
-        _fuente(p.add_run(texto), fuente, size, bold, italic, color)
-    return p
-
-
-def h1(texto):
-    p = doc.add_paragraph()
-    p.paragraph_format.space_before = Pt(7)
-    p.paragraph_format.space_after = Pt(3)
-    _fuente(p.add_run(texto), TIT, 12.5, bold=True, color=AZUL_MARINO)
-    return p
-
-
-def vineta(texto, negrita_hasta=None):
-    p = doc.add_paragraph()
-    p.paragraph_format.left_indent = Cm(0.55)
-    p.paragraph_format.space_after = Pt(3)
-    p.paragraph_format.line_spacing = 1.08
-    _fuente(p.add_run("▪  "), CUERPO, 10, bold=True, color=VERDE_OSC)
-    if negrita_hasta:
-        _fuente(p.add_run(negrita_hasta), CUERPO, 9.5, bold=True, color=AZUL_INST)
-    _fuente(p.add_run(texto), CUERPO, 9.5, color=TEXTO)
-    return p
-
-
-def cell_text(cell, texto, bold=False, color=TEXTO, size=9, align=None, fuente=CUERPO):
-    cell.text = ""
-    p = cell.paragraphs[0]
-    p.paragraph_format.space_after = Pt(1)
-    p.paragraph_format.space_before = Pt(1)
-    if align is not None:
-        p.alignment = align
-    _fuente(p.add_run(str(texto)), fuente, size, bold, False, color)
-
-
-def tabla(headers, filas, anchos=None, size=8.5, alinear_der=None):
-    """Tabla institucional: encabezado azul marino, zebra suave, sin bordes pesados."""
-    alinear_der = alinear_der or []
-    t = doc.add_table(rows=1, cols=len(headers))
-    t.style = "Table Grid"
-    t.alignment = WD_TABLE_ALIGNMENT.CENTER
-    for j, hh in enumerate(headers):
-        c = t.rows[0].cells[j]
-        cell_text(c, hh, bold=True, color=BLANCO, size=size, fuente=TIT,
-                  align=WD_ALIGN_PARAGRAPH.RIGHT if j in alinear_der else None)
-        shade(c, HEX_MARINO)
-    for i, fila in enumerate(filas):
-        cells = t.add_row().cells
-        for j, val in enumerate(fila):
-            neg = j == 0 and str(val).startswith("Total")
-            cell_text(cells[j], val, bold=neg, size=size,
-                      align=WD_ALIGN_PARAGRAPH.RIGHT if j in alinear_der else None)
-            if i % 2 == 1:
-                shade(cells[j], HEX_ZEBRA)
-    if anchos:
-        for row in t.rows:
-            for j, w in enumerate(anchos):
-                row.cells[j].width = Cm(w)
-    return t
-
-
-def callout(titulo, lineas, hexc_borde=HEX_MANZANA):
-    p = doc.add_paragraph()
-    p.paragraph_format.space_before = Pt(6)
-    p.paragraph_format.space_after = Pt(0)
-    p.paragraph_format.left_indent = Cm(0.15)
-    borde_izq(p, hexc_borde)
-    fondo_par(p, HEX_CALLOUT)
-    _fuente(p.add_run(titulo), TIT, 10.5, bold=True, color=AZUL_MARINO)
-    for k, ln in enumerate(lineas):
-        q = doc.add_paragraph()
-        q.paragraph_format.space_before = Pt(0)
-        q.paragraph_format.space_after = Pt(6 if k == len(lineas) - 1 else 1)
-        q.paragraph_format.left_indent = Cm(0.15)
-        q.paragraph_format.line_spacing = 1.08
-        borde_izq(q, hexc_borde)
-        fondo_par(q, HEX_CALLOUT)
-        _fuente(q.add_run(ln), CUERPO, 9.5, color=TEXTO)
-
-
-def kpi_row(items):
-    """Fila de metricas destacadas: cifra grande turquesa + etiqueta gris."""
-    t = doc.add_table(rows=2, cols=len(items))
-    t.alignment = WD_TABLE_ALIGNMENT.CENTER
-    for j, (cifra, etiqueta) in enumerate(items):
-        cell_text(t.rows[0].cells[j], cifra, bold=True, color=TURQUESA, size=15,
-                  align=WD_ALIGN_PARAGRAPH.CENTER, fuente=TIT)
-        cell_text(t.rows[1].cells[j], etiqueta, color=GRIS_INST, size=8,
-                  align=WD_ALIGN_PARAGRAPH.CENTER)
-    return t
-
-
-def nota(texto):
-    par(texto, size=8.5, italic=True, color=GRIS_INST, after=3)
-
-
-# ------------------------------------------------------------------ encabezado y pie
-enc = doc.sections[0].header
-enc.is_linked_to_previous = False
-pe = enc.paragraphs[0]
-pe.alignment = WD_ALIGN_PARAGRAPH.RIGHT
-_fuente(pe.add_run("Corporación Unificada Nacional de Educación Superior - CUN"),
-        CUERPO, 8, color=GRIS_INST)
-
-pie = doc.sections[0].footer
-pie.is_linked_to_previous = False
-pp = pie.paragraphs[0]
-pp.alignment = WD_ALIGN_PARAGRAPH.LEFT
-_fuente(pp.add_run("Vicerrectoría de Servicios Digitales · Analítica financiera   "
-                   "|   VIGILADA MINEDUCACIÓN"), CUERPO, 8, color=GRIS_INST)
+# La identidad visual CUN vive en el skill informes-cartera-word; aqui solo va el
+# contenido. Los nombres cortos se rebindean para no reescribir cada llamada.
+D = DocumentoCUN()
+doc = D.doc
+_fuente = D.fuente
+par, h1, vineta, tabla = D.par, D.h1, D.vineta, D.tabla
+callout, kpi_row, nota, linea_acento = D.callout, D.kpi_row, D.nota, D.linea_acento
 
 # ================================================================== HOJA 1
 par("INFORME EJECUTIVO", size=9.5, bold=True, color=TURQUESA, fuente=TIT, after=1)
@@ -432,5 +231,5 @@ nota("Fuentes: [Financiera].[Cartera_Meta_Comercial_Historico] y su snapshot de 
      "[Financiera].[Cartera_CUN_Asesor_Unico]. Extracción del 2 de septiembre de 2026. "
      "Cifras en millones de pesos colombianos.")
 
-doc.save(SALIDA)
+D.guardar(SALIDA)
 print(f"OK -> {SALIDA}")

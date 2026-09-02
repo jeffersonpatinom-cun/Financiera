@@ -26,3 +26,6 @@ desktop.ini
 
 # Bases de cartera con datos personales: se regeneran con exportar_base_meta_septiembre.py
 Base_Meta_Comercial_*.xlsx
+
+# Archivos de bloqueo de Office
+~$*
