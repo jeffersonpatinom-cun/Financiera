@@ -119,10 +119,17 @@ asesor. La primera da una serie coherente: 17.351 / 61.767 / 4.238.
 
 **El universo de asesores excluye `'Reasignar en CRM'` y `'Sin asignar'`** de la
 columna `Asesor_Unico`. Son 84.179 de 311.640 registros; sin el filtro toda métrica
-de gestión queda inflada un 27%. Ese apartado es hallazgo por derecho propio:
-28.619 personas sin asesor responsable.
+de gestión queda inflada un 27%. Ese apartado es hallazgo por derecho propio, pero
+se reporta cruzado contra la meta: ver la regla siguiente.
 
 **Pago = `Fecha_de_pago` en el mes, sumando `Valor_pagado`.**
+
+**La cartera sin responsable se cruza contra la meta.** Los registros con
+`Asesor_Unico` en `'Reasignar en CRM'` o `'Sin asignar'` son 84.179 de 28.619
+personas, pero la mayoria es cartera fuera de meta que no le corresponde
+reasignar a Cartera. La cifra que se reporta es la interseccion con los
+estudiantes de la meta vigente: 16.272 registros de 4.249 personas, $1.383,8
+millones, el 8,4% del saldo de la meta.
 
 **El cumplimiento se mide por salida completa de la obligación, no por reducción de
 saldo.** El refresco total de saldos entró en operación el 2026-09-01; antes de esa

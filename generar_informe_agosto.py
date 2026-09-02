@@ -13,6 +13,10 @@ Reglas de calculo acordadas con la Coordinacion (2026-09-02):
   * Pago    = Fecha_de_pago en agosto, sumando Valor_pagado.
   * Q y marca de la meta SIEMPRE del snapshot 202609 (cierre de agosto).
   * El informe no nombra asesores: solo agregados del equipo.
+  * Cartera sin responsable = Asesor_Unico en ('Reasignar en CRM','Sin asignar')
+    CRUZADO contra los estudiantes de la meta vigente. Sin ese cruce son 84.179
+    registros, pero la mayoria es cartera fuera de meta que no le corresponde
+    reasignar a Cartera.
 
 Estilo: Lineamientos_Visuales_y_Comunicacion_CUN_Word.md
 """
@@ -57,8 +61,9 @@ callout(
      "$2.769,5 millones: un cumplimiento del 18,5% sobre las 50.146 obligaciones con que "
      "arrancó el mes. El equipo registró 61.767 gestiones sobre 18.716 personas y $5.483,9 "
      "millones en pagos.",
-     "El hallazgo que exige decisión es de asignación, no de esfuerzo: 84.179 registros de "
-     "28.619 personas permanecen sin asesor responsable y por tanto fuera de toda gestión."],
+     "El hallazgo que exige decisión es de asignación, no de esfuerzo: 4.249 estudiantes de "
+     "la meta vigente, con $1.383,8 millones en saldo, no tienen asesor responsable y por "
+     "tanto quedan fuera de toda gestión."],
 )
 
 h1("1.  Cumplimiento de la meta")
@@ -205,10 +210,11 @@ vineta("el rango de 300 a 600 mil pesos aporta $2.269,9 millones, el 41,4% del v
        "esfuerzo de contacto.", "Concentración del valor: ")
 
 h1("6.  Observaciones de la Analítica")
-vineta("84.179 registros de 28.619 personas están marcados «reasignar en CRM» o «sin "
-       "asignar». Es el 27% de la cartera del CRM y ningún asesor la tiene a cargo, de modo "
-       "que queda fuera de cualquier indicador de gestión. Recomendamos resolver la "
-       "asignación antes del cierre de septiembre.", "Cartera sin responsable: ")
+vineta("4.249 estudiantes de la meta de septiembre —16.272 registros marcados «reasignar "
+       "en CRM» o «sin asignar»— no tienen asesor a cargo. Suman $1.383,8 millones, el 8,4% "
+       "del saldo de la meta, y al no estar asignados quedan fuera de cualquier indicador de "
+       "gestión. Recomendamos resolver la asignación antes del cierre de septiembre.",
+       "Cartera de la meta sin responsable: ")
 vineta("los campos medio de pago, tipo de cartera y regional están sin diligenciar en más "
        "del 89% de los registros de pago, lo que impide analizar el recaudo por canal. Es "
        "un ajuste de captura en el CRM, no de la analítica.", "Campos sin diligenciar: ")
@@ -218,9 +224,9 @@ vineta("la tabla del CRM es una fotografía del día y se reconstruye en cada co
 
 callout(
     "Recomendación",
-    ["Reasignar los 84.179 registros sin responsable y atacar el segmento «sin registro de "
-     "clase» con una estrategia distinta a la llamada de seguimiento: concentra $4.355,0 "
-     "millones y solo respondió el 3,2%.",
+    ["Asignar los 4.249 estudiantes de la meta que hoy no tienen responsable ($1.383,8 "
+     "millones) y atacar el segmento «sin registro de clase» con una estrategia distinta a la "
+     "llamada de seguimiento: concentra $4.355,0 millones y solo respondió el 3,2%.",
      "Sobre el 25,4% de gestiones que terminan en «no contesta», priorizar la depuración del "
      "dato de contacto antes de aumentar el volumen de llamadas."],
     hexc_borde="00859B",

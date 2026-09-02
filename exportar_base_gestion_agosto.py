@@ -18,7 +18,10 @@ Hojas:
                            ademas se tipifico en agosto.
   3. Resumen_Asesor      : gestiones, personas, pagos y efectividad por asesor.
   4. Resumen_Tipificacion: en que termina la gestion.
-  5. Sin_Asignar         : los 84.179 registros sin asesor responsable.
+  5. Sin_Asignar         : estudiantes DE LA META vigente sin asesor responsable.
+                           Regla de negocio: el cruce contra la meta es obligatorio;
+                           sin el serian 84.179 registros de cartera que en su mayoria
+                           no le corresponde reasignar a Cartera.
   6. Diccionario         : que significa cada columna.
 
 Uso:  .venv/Scripts/python.exe exportar_base_gestion_agosto.py
@@ -117,10 +120,29 @@ WHERE {FILTRO_ASESOR}
 ORDER BY ASESOR, FECHA_PAGO;
 """
 
+# Regla de negocio acordada con la Coordinacion (2026-09-02): la hoja Sin_Asignar
+# lleva UNICAMENTE estudiantes que estan en la meta vigente y que en la base de
+# gestion no tienen asesor responsable ('Reasignar en CRM' o 'Sin asignar').
+# Sin el cruce contra la meta serian 84.179 registros de 28.619 personas, pero la
+# mayoria es cartera fuera de meta que no le corresponde reasignar a Cartera.
+META_VIGENTE = "202609"
+
 SQL_SIN_ASIGNAR = f"""
+WITH META AS (
+    SELECT LTRIM(RTRIM(IDENTIFICACION))          AS ID,
+           COUNT(*)                              AS OBLIGACIONES_EN_META,
+           SUM(CAST(TOTAL AS DECIMAL(18,2)))     AS SALDO_EN_META,
+           MIN([Asignacion Q])                   AS CUARTIL_MAS_URGENTE
+    FROM Financiera.Cartera_Meta_Comercial_Historico
+    WHERE Meta_2026 LIKE '%{META_VIGENTE}%'
+    GROUP BY LTRIM(RTRIM(IDENTIFICACION))
+)
 SELECT
-    LTRIM(RTRIM(ISNULL(NULLIF(LTRIM(RTRIM(G.Asesor_Unico)),''),'(vacio)'))) AS ESTADO_ASIGNACION,
+    LTRIM(RTRIM(G.Asesor_Unico))                          AS ESTADO_ASIGNACION,
     LTRIM(RTRIM(G.Número_de_identificación))              AS IDENTIFICACION,
+    M.OBLIGACIONES_EN_META                                AS OBLIGACIONES_EN_META,
+    CAST(M.SALDO_EN_META AS DECIMAL(18,2))                AS SALDO_EN_META,
+    M.CUARTIL_MAS_URGENTE                                 AS CUARTIL_MAS_URGENTE,
     G.Documento_Cartera_CUN                               AS REGISTRO,
     G.Número_de_crédito                                   AS NUMERO_CREDITO,
     G.Periodo                                             AS PERIODO,
@@ -135,9 +157,9 @@ SELECT
     G.Celular                                             AS CELULAR,
     G.Correo_electrónico                                  AS CORREO
 FROM Financiera.Cartera_CUN_Asesor_Unico G
+JOIN META M ON M.ID = LTRIM(RTRIM(G.Número_de_identificación))
 WHERE G.Asesor_Unico IN ('Reasignar en CRM','Sin asignar')
-   OR NULLIF(LTRIM(RTRIM(G.Asesor_Unico)),'') IS NULL
-ORDER BY ESTADO_ASIGNACION, IDENTIFICACION;
+ORDER BY M.SALDO_EN_META DESC, IDENTIFICACION;
 """
 
 DICCIONARIO = [
@@ -160,7 +182,9 @@ DICCIONARIO = [
     ("CLASIFICACION_CARTERA", "Clasificacion de la cartera (CUENTAS POR COBRAR, CXC REFINANCIADO, etc.)."),
     ("MARCA_ACADEMICA", "Marca que enruta la gestion segun el vinculo academico del deudor."),
     ("PERFIL_RIESGO", "Perfil crediticio del deudor. Riesgo Alto o Regular es señal adversa."),
-    ("ESTADO_ASIGNACION", "Solo en la hoja Sin_Asignar: si el registro esta 'Reasignar en CRM' o 'Sin asignar'."),
+    ("ESTADO_ASIGNACION", "Solo en Sin_Asignar: si el registro esta 'Reasignar en CRM' o 'Sin asignar'."),
+    ("OBLIGACIONES_EN_META / SALDO_EN_META", "Solo en Sin_Asignar: cuantas cuotas y cuanto saldo tiene esa persona en la meta vigente. Ordena la hoja de mayor a menor saldo, para repartir empezando por lo que mas pesa."),
+    ("CUARTIL_MAS_URGENTE", "Solo en Sin_Asignar: el cuartil mas antiguo entre las obligaciones que la persona tiene en la meta (Q1 es lo mas vencido)."),
 ]
 
 
@@ -288,8 +312,9 @@ def main():
     print(f"   Pagos en agosto      : {len(pagos):,}  "
           f"(${pagos['VALOR_PAGADO'].sum()/1e6:,.1f} MM)")
     print(f"   Efectividad equipo   : {resumen.iloc[-1]['Efectividad_pct']}%")
-    print(f"   Sin asignar          : {len(sin_asignar):,} registros, "
-          f"{sin_asignar['IDENTIFICACION'].nunique():,} personas")
+    print(f"   Sin asignar (meta)   : {len(sin_asignar):,} registros, "
+          f"{sin_asignar['IDENTIFICACION'].nunique():,} personas, "
+          f"${sin_asignar.drop_duplicates('IDENTIFICACION')['SALDO_EN_META'].sum()/1e6:,.1f} MM en la meta")
 
 
 if __name__ == "__main__":
