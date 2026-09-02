@@ -54,7 +54,8 @@ PERMITIDOS = {
 ACCION = re.compile(
     r'\b(se\s+)?(cre[oó]|creaci[oó]n|ajust[eoó]|ajuste|modific[oó]|actualiz[oó]|'
     r'implement[oó]|automatiz[oó]|corrigi[oó]|correcci[oó]n|desarroll[oó]|'
-    r'construy[oó]|configur[oó]|document[oó]|separ[oó]|unific[oó]|agreg[oó])\b',
+    r'construy[oó]|configur[oó]|document[oó]|separ[oó]|unific[oó]|agreg[oó]|'
+    r'elabor[oó]|entreg[oó])\b',
     re.I)
 
 
