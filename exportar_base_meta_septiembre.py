@@ -84,8 +84,9 @@ DICCIONARIO = [
 
 def autoajustar(ws, df, ancho_max=42):
     for j, col in enumerate(df.columns, start=1):
-        muestra = df[col].head(300).astype(str)
-        ancho = max(len(str(col)), int(muestra.str.len().max() or 0)) + 2
+        largo = df[col].head(300).astype(str).str.len().max()
+        largo = 0 if pd.isna(largo) else int(largo)
+        ancho = max(len(str(col)), largo) + 2
         ws.column_dimensions[get_column_letter(j)].width = min(ancho, ancho_max)
 
 
