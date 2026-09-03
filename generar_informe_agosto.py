@@ -262,12 +262,72 @@ vineta("la efectividad no sigue al volumen. Yenifer Salazar convierte el 45,0% c
        "Volumen no es resultado: ")
 
 # ================================================================== HOJA 5
-# Con salto explicito. Sin el, la seccion 7 arranca en el hueco que deja la tabla
+D.salto_pagina()
+
+h1("7.  Campaña de mensajes preventivos (WhatsApp)")
+kpi_row([("16.539", "IMPACTOS SIN ASESOR"),
+         ("3.073", "PERSONAS CON PAGO"),
+         ("$791", "MILLONES (TECHO)"),
+         ("0", "MENSAJES SMS")])
+
+par("Además de la gestión telefónica, la Coordinación opera una automatización de envío "
+    "de mensajes configurada en Zoho. Aislamos los registros que tienen plantilla "
+    "asignada y que ningún asesor gestionó, para que ningún pago se cuente dos veces "
+    "entre los dos frentes.", before=6, after=4)
+
+callout(
+    "Lo que estas cifras NO prueban",
+    ["Los campos «Plantilla» y «Población» describen la automatización configurada, no un "
+     "acuse del proveedor. Hoy no podemos establecer si el mensaje salió, en qué fecha, "
+     "si fue entregado ni si fue leído: esa información la devuelve la API de WhatsApp "
+     "Meta, que aún no está integrada.",
+     "Sin fecha de envío tampoco podemos exigir que el pago sea posterior al mensaje, "
+     "que es la regla que sí aplicamos a la gestión de los asesores. Por eso los $791,9 "
+     "millones son un techo de impacto potencial por coincidencia, no recaudo demostrado, "
+     "y no deben compararse de igual a igual contra los $2.408,8 millones del equipo."],
+    hexc_borde="C8102E",
+)
+
+tabla(
+    ["Plantilla", "Segmento", "Momento", "Impactos", "Personas", "$ MM"],
+    [["WA_P1_M03", "Nuevos", "3 días después", "3.756", "3.719", "80,0"],
+     ["WA_P1_M08", "Nuevos", "8 días después", "2.707", "2.597", "39,7"],
+     ["WA_P2_M08", "Antiguos", "8 días después", "2.633", "2.456", "69,9"],
+     ["WA_P2_M03", "Antiguos", "3 días después", "2.586", "2.562", "66,7"],
+     ["WA_P1_PRE", "Nuevos", "3 días antes", "1.815", "1.781", "168,0"],
+     ["WA_P2_PRE", "Antiguos", "3 días antes", "1.449", "1.430", "193,1"],
+     ["WA_P1_M01", "Nuevos", "1 día después", "913", "902", "86,1"],
+     ["WA_P2_M01", "Antiguos", "1 día después", "680", "673", "88,4"]],
+    anchos=[3.4, 2.8, 3.4, 2.4, 2.4, 2.0],
+    alinear_der=[3, 4, 5],
+)
+par("", after=3)
+
+vineta("de las 12 plantillas SMS que define el diseño de la campaña no se registró "
+       "ninguna: el 100% de los impactos es WhatsApp. Y del segmento P3 —pagos "
+       "parciales— tampoco hay registro; solo operan P1 y P2. O el canal y el segmento "
+       "no se activaron, o no se están marcando en el CRM.",
+       "Media campaña no aparece: ")
+vineta("es tentador concluir que el mensaje preventivo convierte mejor que el de mora, "
+       "porque PRE y M01 muestran 42% contra 9% de M03 y M08. No lo reportamos como "
+       "hallazgo: esa diferencia se explica por la composición de cada grupo. El campo "
+       "de pago solo está diligenciado en las obligaciones que ya salieron de la cartera "
+       "activa (92,3% contra 0,1%), y la proporción de esas obligaciones cae justo en ese "
+       "orden —M01 98%, PRE 48%, M03 22%, M08 18%—. Lo que se ve es la mezcla, no el "
+       "momento del disparo.", "Por qué no decimos que el preventivo rinde más: ")
+vineta("comparando dentro de población equivalente, quien tenía plantilla asignada pagó "
+       "en 57,1% contra 38,3% de quien no la tenía. La diferencia de 18,8 puntos es "
+       "sugerente y justifica sostener la campaña, pero no es causal: la plantilla no se "
+       "asigna al azar. Para afirmar causalidad hace falta la fecha de envío.",
+       "Lo único comparable hoy: ")
+
+# ================================================================== HOJA 6
+# Con salto explicito. Sin el, la seccion 8 arranca en el hueco que deja la tabla
 # de liquidacion y Word parte la tabla de semanas por la mitad: el encabezado y la
 # fila de gestiones quedan en una pagina y las de pagos y valor en la siguiente.
 D.salto_pagina()
 
-h1("7.  Ritmo de la gestión: cuándo se trabaja y cuándo se paga")
+h1("8.  Ritmo de la gestión: cuándo se trabaja y cuándo se paga")
 kpi_row([("7 días", "MEDIANA CONTACTO → PAGO"),
          ("30,0%", "PAGA EN LOS 3 PRIMEROS DÍAS"),
          ("33,5%", "GESTIÓN EN LA ÚLTIMA SEMANA"),
@@ -323,9 +383,9 @@ vineta("el 22,3% de los pagos ocurre antes del último contacto registrado: el a
 # ================================================================== HOJA 5
 D.salto_pagina()
 
-h1("8.  Plan de acción — septiembre 2026")
+h1("9.  Plan de acción — septiembre 2026")
 
-par("Seis frentes, ordenados por impacto sobre el saldo y por qué tan rápido se "
+par("Siete frentes, ordenados por impacto sobre el saldo y por qué tan rápido se "
     "pueden ejecutar. Los cuatro primeros no dependen de terceros.", after=4)
 
 tabla(
@@ -341,7 +401,9 @@ tabla(
      ["5", "Estrategia distinta para «sin registro de clase»",
       "Subir del 3,2% al 8% de cumplimiento", "Coordinación + Bienestar"],
      ["6", "Nivelar la carga entre los 14 asesores activos",
-      "Rango máximo de 2:1 (hoy 3,4:1)", "Coordinación"]],
+      "Rango máximo de 2:1 (hoy 3,4:1)", "Coordinación"],
+     ["7", "Integrar la API de WhatsApp Meta",
+      "Medir envío, entrega y lectura", "Tecnología + Analítica"]],
     anchos=[1.2, 6.4, 5.2, 3.6],
 )
 par("", after=4)
@@ -360,8 +422,13 @@ vineta("el acuerdo verbal convierte al 19,7% contra 13,6% del seguimiento simple
        "pedimos más llamadas sino que más terminen en un compromiso concreto de fecha y "
        "monto —y sobre población contactable: hoy el 26,0% de la gestión muere en «no "
        "contesta».", "3 y 4. Calidad del contacto: ")
+vineta("sin los datos que devuelve la API de WhatsApp Meta no podemos saber si los "
+       "mensajes salen, llegan o se leen, y por tanto no podemos medir el retorno de la "
+       "campaña ni decidir en qué momento conviene disparar. Es la única acción del plan "
+       "que desbloquea una medición, no un resultado.",
+       "7. Integrar la API de WhatsApp: ")
 
-h1("9.  Observaciones de la Analítica")
+h1("10.  Observaciones de la Analítica")
 vineta("las cifras de gestión de esta versión salen del histórico de tipificación, que "
        "sí conserva cada movimiento. La versión anterior las tomaba de la foto diaria del "
        "CRM, que se reconstruye en cada corrida. El cambio hace las cifras reproducibles "

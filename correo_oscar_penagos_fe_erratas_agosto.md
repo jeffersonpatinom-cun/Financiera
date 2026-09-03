@@ -48,6 +48,17 @@ Quiero separar con claridad dos cosas distintas, porque no tienen la misma grave
 - **El esfuerzo llega tarde.** La mediana entre el contacto y el pago es de 7 días, pero el 33,5% de la gestión del mes se ejecuta en la última semana. Buena parte de ese trabajo cobra en septiembre y no alcanza a contarse en el cierre de agosto. Adelantar carga a la primera quincena no cuesta un peso más.
 - **La tipificación que anticipa el pago es «genera acuerdo de pago verbal»**, con 19,7% de conversión contra 13,6% del seguimiento simple. Ojo con «ya realizó el pago», que aparece con 61,6%: esa no mide gestión, se aplica porque el pago ya ocurrió.
 
+**Sobre la campaña de mensajes.** Agregamos la sección 7 con la gestión que no ejecuta un asesor sino la automatización de Zoho, aislando los registros que ningún asesor tocó para que nada se cuente dos veces: **16.539 impactos, 3.073 personas con pago, $791,9 millones**.
+
+Esa cifra hay que leerla con cuidado y prefiero decirlo antes de que la use:
+
+- **No prueba que el mensaje se haya enviado.** Los campos «Plantilla» y «Población» describen la automatización configurada, no un acuse del proveedor. Hoy no sabemos si el mensaje salió, en qué fecha, si fue entregado ni si fue leído. Eso lo devuelve la API de WhatsApp Meta, que aún no está integrada. Los $791,9 millones son un **techo de impacto potencial por coincidencia**, no recaudo demostrado, y no son comparables de igual a igual con los $2.408,8 millones del equipo.
+- **No podemos exigir que el pago sea posterior al mensaje**, que es justo la regla que sí aplicamos a los asesores, porque no hay fecha de envío.
+- **Dos cosas del diseño no aparecen en los datos:** de las 12 plantillas SMS no se registró ninguna —el 100% de los impactos es WhatsApp— y del segmento P3, pagos parciales, tampoco hay registro. O no se activaron, o no se están marcando en el CRM. Vale la pena confirmarlo.
+- **Una advertencia analítica:** los datos sugieren que el mensaje preventivo convierte mucho mejor que el de mora (42% contra 9%). **No lo reportamos como hallazgo porque es un espejismo:** esa diferencia se explica por la composición de cada grupo, no por el momento del disparo. Lo único comparable hoy es que, dentro de población equivalente, quien tenía plantilla pagó 57,1% contra 38,3% de quien no la tenía. Sugerente y suficiente para sostener la campaña, pero no causal.
+
+Por eso agregamos al plan la integración de la API como acción 7: es la única que desbloquea una medición en lugar de un resultado.
+
 **Qué ya está corregido.** El procedimiento que alimenta el tablero ya distingue quién gestionó de quién tiene asignada la cartera (columnas `GESTION_ASESOR`, `GESTION_MARCA` y `GESTION_PAGO_POST_MARCA`), y la corrección quedó documentada en las reglas de negocio para que no se reintroduzca. Los informes de septiembre en adelante salen ya con el criterio correcto.
 
 Quedo atento a tus comentarios y con gusto lo revisamos juntos si te sirve.
