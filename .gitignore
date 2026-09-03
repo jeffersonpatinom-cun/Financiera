@@ -30,3 +30,8 @@ Base_Gestion_Asesores_*.xlsx
 
 # Archivos de bloqueo de Office
 ~$*
+
+# Informes con ranking nominal de asesores: son evaluacion de personal.
+# Se entregan por canal interno, no van al historial de git.
+Informe_Ejecutivo_Cierre_Agosto_2026.docx
+Evidencia_NDB_Fantasma_*.xlsx

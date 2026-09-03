@@ -14,6 +14,11 @@ sostenerse sola.
 | **Meta Comercial** del mes | El día 1, tras correr `JOB_USP_Foto_Meta_Comercial_Mensual` | 2 hojas | `Cartera_Meta_Comercial_Historico` |
 | **Cierre de mes** (cumplimiento + gestión + recaudo) | Cuando ya cerró el mes anterior | 3 hojas | + `Cartera_CUN_Asesor_Unico` y el snapshot |
 
+El tope de 3 hojas del cierre aplica al informe estándar. La v2 de agosto llegó a 6
+porque sumó fe de erratas, liquidación nominal, ritmo de la gestión y plan de acción
+—todo pedido expresamente—. Ampliar el tope es una decisión que se toma y se declara,
+no un descuido: si el contenido no cabe, se recorta contenido y nunca la fuente.
+
 Referencias vivas, no plantillas muertas: `generar_informe_meta_septiembre.py` y
 `generar_informe_agosto.py` en la raíz del repo. Para un mes nuevo se copia el que
 corresponda y se cambian las cifras.
@@ -112,17 +117,40 @@ incorrecta como bloque de control etiquetado `NO USAR`.
 saldo de los que siguen, así que subestima con qué saldo se trabajó realmente el
 mes ($15.042,0 MM contra los $15.198,0 MM correctos en agosto).
 
-**Gestión se mide con `Hora_modificacion_tipif`, no con `Hora_de_modificación`.**
-La segunda cae en agosto para el 93% de la base por una actualización masiva —1.538
-registros en julio contra 210.789 en agosto—: mide carga de sistema, no trabajo de
-asesor. La primera da una serie coherente: 17.351 / 61.767 / 4.238.
+**Gestión NO se mide con `Asesor_Unico`.** Corregido el 2026-09-03 tras publicar
+cifras falsas en el cierre de agosto; costó una fe de erratas. `Asesor_Unico` está
+diseñado para **nunca quedar vacío**: baja una escalera de 5 prioridades y solo la
+prioridad 0 (`Hecho_por` del histórico) es evidencia de gestión. La 1 (quien modificó
+el registro) y la 2 (el propietario asignado) son asesores reales que jamás
+tipificaron. Filtrar con `NOT LIKE '%asignar%'` o `NOT IN ('Reasignar en CRM','Sin
+asignar')` solo descarta los dos literales y deja pasar todo lo demás.
 
-**El universo de asesores excluye `'Reasignar en CRM'` y `'Sin asignar'`** de la
-columna `Asesor_Unico`. Son 84.179 de 311.640 registros; sin el filtro toda métrica
-de gestión queda inflada un 27%. Ese apartado es hallazgo por derecho propio, pero
-se reporta cruzado contra la meta: ver la regla siguiente.
+Medido en agosto: el filtro viejo daba **62.573 cédulas contra 30.757 reales**, y
+reportó **61.767 gestiones cuando 42.768 las hizo el bot CUN DIGITAL**. Las gestiones
+humanas fueron 22.941, de 14 asesores y no 18.
 
-**Pago = `Fecha_de_pago` en el mes, sumando `Valor_pagado`.**
+```sql
+-- Gestión: una fila por tipificación humana. NUNCA por Asesor_Unico.
+FROM [ZOHO].[CRM].[Historico_tipificacion_contact] e
+JOIN ZOHO.CRM.Cartera_CUN c ON CONVERT(varchar(30),c.Id)=CONVERT(varchar(30),e.Cartera_CUN)
+WHERE UPPER(e.Hecho_por) NOT LIKE '%CUN DIGITAL%'   -- bots: 54,3% del histórico
+  AND UPPER(e.Hecho_por) NOT LIKE '%PENAGOS%'
+-- Sobre la tabla materializada, el equivalente por cédula es GESTION_MARCA = 1.
+```
+
+El filtro de bot va **antes** del `ROW_NUMBER`: si el último toque de un crédito lo
+hizo el bot pero antes hubo una tipificación humana, la gestión real existe.
+
+**Pago = `GESTION_PAGO_POST_MARCA = 1`**, no cualquier `Fecha_de_pago` del mes.
+Exige persona gestionada **y** pago posterior a la PRIMERA gestión. En agosto eso
+bajó el recaudo de $5.483,9 MM a $2.408,8 MM: $1.849,5 MM eran de personas que nadie
+gestionó y $1.292,4 MM eran pagos anteriores a que el asesor tocara el caso. Se mide
+contra la primera y no contra la última porque el 22,3% de los pagos ocurre antes del
+último contacto —el asesor vuelve a tipificar después de cobrar, para dejar constancia.
+
+**`Asesor_Unico` SÍ es el campo correcto para asignación**: cartera sin responsable,
+reparto y cuartiles. El error era usarlo para medir quién gestionó. Ver
+`Reglas_Negocio_Clasificaciones_Cartera.md` §2.1.
 
 **La cartera sin responsable se cruza contra la meta.** Los registros con
 `Asesor_Unico` en `'Reasignar en CRM'` o `'Sin asignar'` son 84.179 de 28.619
@@ -167,11 +195,13 @@ plural ("Ejecutamos", "Comparamos"), tono cercano pero profesional, todo
 fundamentado en el dato.
 
 - **Rotular el dinero por lo que es.** Si sale del CRM es *"registrado en CRM"*,
-  nunca *"recaudado"* a secas: en agosto el CRM registró $5.483,9 MM y la caja real
-  de esa población fue $9.307,4 MM.
+  nunca *"recaudado"* a secas: la caja institucional se contabiliza por otra vía. Y
+  si además se filtró por gestión, es *"atribuible a la gestión"*: en agosto el CRM
+  registró $5.483,9 MM sobre cartera asignada, pero solo $2.408,8 MM son atribuibles.
 - **No nombrar asesores** salvo que lo pidan explícitamente. Por defecto, agregados
   del equipo: un ranking nominal en un documento que circula es una evaluación de
-  personal.
+  personal. La Coordinación sí lo pidió para la liquidación de agosto: en ese caso va
+  en su propia sección, con página propia (la tabla de 19 filas se parte si no).
 - Cada viñeta abre con su etiqueta en negrita (`vineta(texto, "Etiqueta: ")`).
 - Las observaciones de la Analítica van al final y son honestas: qué no se pudo
   medir y por qué.
