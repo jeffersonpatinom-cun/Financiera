@@ -130,6 +130,62 @@ Se descartan 1.878 filas huérfanas con `Cartera_CUN` nulo.
 - **La llave es la identificación, no el crédito.** Si un estudiante tiene dos créditos
   gestionados por asesores distintos, `Asesor_Unico` conserva solo uno. El detalle por
   crédito sigue en `Propietario_de_Cartera_CUN_Name`.
+- **`Asesor_Unico` NO sirve para medir gestión.** Ver la sección 2.1.
+
+### 2.1 `GESTION_*` — quién gestionó de verdad (2026-09-03)
+
+`Asesor_Unico` está diseñado para **nunca quedar vacío**: baja la escalera hasta encontrar
+algo. Solo la **prioridad 0** es evidencia de gestión. La 1 es quien tocó el registro en el
+CRM y la 2 es simplemente el dueño asignado — ninguno de los dos tipificó.
+
+Por eso el filtro que se venía usando para contar gestiones —
+`Asesor_Unico NOT LIKE '%asignar%'`, o su equivalente `NOT IN ('Reasignar en CRM','Sin asignar')` —
+**es incorrecto**: solo descarta los dos literales (prioridades 3 y 4) y deja pasar toda la 1
+y la 2 como si hubieran gestionado.
+
+> **Medido el 2026-09-03:** el filtro viejo daba **62.573 cédulas** (229.902 filas) cuando
+> las gestionadas de verdad eran **30.757**. Sobreestimaba en **103 %** — más del doble.
+
+Las columnas `GESTION_*` salen **únicamente** del histórico de tipificación:
+
+| Columna | Qué es |
+|---|---|
+| `GESTION_ASESOR` | Asesor de la última gestión humana de esa cédula. `NULL` si nadie la gestionó. |
+| `GESTION_MARCA` | `bit`. **Este es el filtro correcto: `WHERE GESTION_MARCA = 1`.** |
+| `GESTION_FECHA_PRIMERA` | `datetime` de la primera gestión. |
+| `GESTION_FECHA_ULTIMA` | `datetime` de la última gestión. |
+| `GESTION_PAGO_POST_MARCA` | `bit`. Hay gestión **y** `Fecha_de_pago >= GESTION_FECHA_PRIMERA`. |
+
+Reglas de construcción:
+
+- **Grano: por cédula**, igual que `Asesor_Unico`. Es la lógica de cobro — una cédula
+  pertenece a un asesor sin importar cuántas cuotas tenga; si tipificó una cuota, gestionó a
+  la persona y los pagos de cualquiera de sus cuotas le son atribuibles.
+- **Los bots no cuentan.** `CUN DIGITAL` y `PENAGOS` son el **54,3 %** del histórico, pero
+  filtrarlos solo deja sin gestión a **29 cédulas**: casi nunca son el único gestor.
+- **El filtro de bot va antes del `ROW_NUMBER`.** Si el último toque de un crédito lo hizo el
+  bot pero antes hubo una tipificación humana, la gestión real existe. Por eso no se reutiliza
+  `#Tipificacion_Ultima`, que toma `rn = 1` sobre todas las filas.
+
+**Los dos campos responden preguntas distintas y no son intercambiables:**
+
+| | Responde | ¿Puede ser NULL? |
+|---|---|---|
+| `Asesor_Unico` | ¿De quién es esta cartera? (base asignada, reparto, cuartiles) | No, nunca |
+| `GESTION_ASESOR` | ¿Quién gestionó? (gestiones, efectividad, pagos) | Sí, si nadie gestionó |
+
+Uso aguas abajo:
+
+```sql
+WHERE GESTION_MARCA = 1                      -- universo de gestión real
+-- Personas gestionadas -> DISTINCTCOUNT(Número_de_identificación)
+-- Gestiones del mes    -> GESTION_FECHA_ULTIMA dentro de la ventana
+-- Pagos atribuibles    -> WHERE GESTION_PAGO_POST_MARCA = 1
+```
+
+**Trampa:** `Hora_modificacion_tipif` sigue existiendo pero **no** es la fecha de gestión de
+`GESTION_ASESOR` — está al grano del crédito, viene `varchar` sin parsear e incluye bots. Para
+fechas de gestión se usan las `GESTION_FECHA_*`.
 
 ---
 
@@ -377,6 +433,7 @@ Un mismo crédito lleva las cuatro marcas y cada una responde una pregunta disti
 | 6 | `RIESGO CREDITICIO ADVERSO` buscado bajo `GESTIONABLE` | Esa combinación no existe: la marca ya subió a PERIODO PERDIDO |
 | 7 | Sumar **clientes** por `CLASIFICACION_CARTERA` antes del 28-ago | Los buckets se solapaban: 87.333 vs 82.585 reales, 4.748 contados dos veces. Resuelto con `CXC REFINANCIADO` |
 | 8 | `MARCA_ACADEMICA` de un estudiante con 2 créditos en periodos distintos | El promedio es acumulado (solo por identificación); el estado del periodo sí es por periodo |
+| 9 | Medir **gestión** filtrando `Asesor_Unico` (`NOT LIKE '%asignar%'`) | Sobreestima **103 %**: 62.573 cédulas contra 30.757 reales. Se cuelan las prioridades 1 y 2, que nunca tipificaron. Usar `GESTION_MARCA = 1` (§2.1) |
 | 9 | Filtrar `CLASIFICACION_CARTERA = 'CARTERA'` para "toda la deuda vencida" | Desde el 28-ago deja fuera a los 4.748 refinanciados ($5.874,4 MM). Use `IN ('CARTERA','CXC REFINANCIADO')` |
 | 10 | Asumir que `CLASIFICACION_CARTERA` es función del periodo | Ya no lo es: `CXC REFINANCIADO` depende de la cartera completa del deudor. Dos filas del mismo periodo pueden diferir |
 
