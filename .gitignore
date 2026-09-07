@@ -35,3 +35,6 @@ Base_Gestion_Asesores_*.xlsx
 # Se entregan por canal interno, no van al historial de git.
 Informe_Ejecutivo_Cierre_Agosto_2026.docx
 Evidencia_NDB_Fantasma_*.xlsx
+
+# Ejemplos con cedulas: datos personales, se entregan por canal interno.
+Ejemplos_Fe_Erratas_Agosto_2026.xlsx
