@@ -191,13 +191,17 @@ par("Un pago se atribuye a la gestión cuando la persona fue efectivamente gesti
     "asesores registraron en el CRM, no el recaudo institucional de caja.",
     before=6, after=4)
 
-par("Conciliación con lo publicado el 2 de septiembre", size=10, bold=True,
+par("Conciliación del criterio anterior al nuevo", size=10, bold=True,
     color=AZUL_INST, fuente=TIT, after=3)
+par("Las tres filas se descomponen sobre la misma extracción del 7 de septiembre, para "
+    "que sumen exacto. El universo es de 19.532 pagos y no de los 19.002 que publicamos "
+    "el 2 de septiembre porque en estos días se registraron más pagos de agosto; la "
+    "cifra publicada sigue siendo la de la tabla de la sección 1.", size=8.5, after=4)
 tabla(
     ["Concepto", "Pagos", "Estudiantes", "Valor ($ MM)"],
-    [["Publicado el 2 de septiembre", "19.002", "11.804", "5.483,9"],
-     ["(–) De personas que nadie gestionó", "5.158", "2.963", "1.849,5"],
-     ["(–) Pago anterior a la primera gestión", "4.855", "3.519", "1.292,4"],
+    [["Universo con el criterio anterior", "19.532", "12.251", "5.606,3"],
+     ["(–) De personas que nadie gestionó", "4.983", "2.835", "1.807,3"],
+     ["(–) Pago anterior a la primera gestión", "5.269", "3.858", "1.391,0"],
      ["(=) Atribuible a la gestión del equipo", "9.280", "5.766", "2.408,0"]],
     anchos=[7.4, 2.6, 2.7, 2.8],
     alinear_der=[1, 2, 3],
