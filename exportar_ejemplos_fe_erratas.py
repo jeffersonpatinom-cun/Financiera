@@ -14,6 +14,12 @@ Hojas:
   Detalle C  :  5.269 pagos anteriores a la primera gestion.
   Detalle D  :  9.280 pagos atribuibles a la gestion.
   Cedulas    : las identificaciones distintas de cada caso, lista limpia.
+
+META_2026 trae los meses en que la obligacion estuvo en la meta comercial
+(lista separada por comas, ej. "202606, 202607, 202608"). Poblada en 76.560 de
+316.862 filas: el resto es cartera fuera de meta. En el caso A es la meta del
+credito que el asesor tipifico, mas la marca EN_META_AGOSTO si cualquiera de
+los creditos tocados por esa accion estaba en la meta del mes.
   Guia       : que prueba cada caso.
 
 QUE ES EL CASO A (lo importante). Cuando un asesor tipifica, el CRM replica esa
@@ -56,6 +62,9 @@ SELECT
     LTRIM(RTRIM(c.[Número_de_identificación]))                  AS IDENTIFICACION,
     MAX(c.[Tipo_cliente])                                       AS TIPO_CLIENTE,
     MAX(CASE WHEN q.quien = 'HUMANO' THEN q.asesor END)         AS ASESOR_QUE_GESTIONO,
+    MAX(CASE WHEN q.quien = 'HUMANO'
+             THEN NULLIF(LTRIM(RTRIM(g.Meta_2026)),'') END)     AS META_2026,
+    MAX(CASE WHEN g.Meta_2026 LIKE '%202608%' THEN 'Si' ELSE 'No' END) AS EN_META_AGOSTO,
     q.tip                                                       AS TIPIFICACION,
     q.cuando                                                    AS MINUTO,
     SUM(CASE WHEN q.quien = 'HUMANO' THEN 1 ELSE 0 END)         AS GESTIONES_REALES,
@@ -64,6 +73,9 @@ SELECT
 FROM [ZOHO].[CRM].[Historico_tipificacion_contact] e
 JOIN ZOHO.CRM.Cartera_CUN c
       ON CONVERT(varchar(30), c.Id) = CONVERT(varchar(30), e.Cartera_CUN)
+/* 1:1 por Id, no hay fan-out: la tabla materializada esta al grano de Cartera_CUN.Id */
+LEFT JOIN Financiera.Cartera_CUN_Asesor_Unico g
+      ON CONVERT(varchar(30), g.Id) = CONVERT(varchar(30), c.Id)
 CROSS APPLY (SELECT
       CASE WHEN UPPER(e.Hecho_por) LIKE '%CUN DIGITAL%'
              OR UPPER(e.Hecho_por) LIKE '%PENAGOS%' THEN 'BOT' ELSE 'HUMANO' END AS quien,
@@ -85,6 +97,7 @@ SELECT
     LTRIM(RTRIM(G.[Número_de_identificación]))          AS IDENTIFICACION,
     G.[Tipo_cliente]                                    AS TIPO_CLIENTE,
     LTRIM(RTRIM(G.Asesor_Unico))                        AS ASESOR_QUE_SE_ACREDITABA,
+    NULLIF(LTRIM(RTRIM(G.Meta_2026)),'')               AS META_2026,
     G.[Número_de_crédito]                               AS NUMERO_CREDITO,
     G.Periodo                                           AS PERIODO,
     G.[Fecha_de_pago]                                   AS FECHA_PAGO,
@@ -101,6 +114,7 @@ SELECT
     LTRIM(RTRIM(G.[Número_de_identificación]))          AS IDENTIFICACION,
     G.[Tipo_cliente]                                    AS TIPO_CLIENTE,
     G.GESTION_ASESOR                                    AS ASESOR_QUE_GESTIONO,
+    NULLIF(LTRIM(RTRIM(G.Meta_2026)),'')               AS META_2026,
     G.[Número_de_crédito]                               AS NUMERO_CREDITO,
     G.[Fecha_de_pago]                                   AS FECHA_PAGO,
     G.GESTION_FECHA_PRIMERA                             AS PRIMERA_GESTION,
@@ -119,6 +133,7 @@ SELECT
     LTRIM(RTRIM(G.[Número_de_identificación]))          AS IDENTIFICACION,
     G.[Tipo_cliente]                                    AS TIPO_CLIENTE,
     G.GESTION_ASESOR                                    AS ASESOR_QUE_GESTIONO,
+    NULLIF(LTRIM(RTRIM(G.Meta_2026)),'')               AS META_2026,
     G.[Número_de_crédito]                               AS NUMERO_CREDITO,
     G.GESTION_FECHA_PRIMERA                             AS PRIMERA_GESTION,
     G.[Fecha_de_pago]                                   AS FECHA_PAGO,
