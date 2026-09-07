@@ -2,7 +2,7 @@
 
 Destinatario: Óscar Penagos, Coordinacion de Recaudo y Cartera.
 Bloques: fe de erratas, cumplimiento de la meta, gestion del equipo, recaudo
-atribuible, liquidacion por asesor y plan de accion de septiembre.
+atribuible, detalle por asesor y plan de accion de septiembre.
 
 POR QUE HAY UNA v2. La v1 (entregada el 2026-09-02) midio gestion y recaudo
 filtrando la columna Asesor_Unico. Ese campo esta disenado para NUNCA quedar
@@ -22,8 +22,9 @@ Reglas de calculo vigentes (2026-09-03):
     a la PRIMERA gestion.
   * Asignacion (cartera sin responsable) = Asesor_Unico. Ahi si es el correcto.
   * Q y marca de la meta SIEMPRE del snapshot 202609 (cierre de agosto).
-  * El ranking va CON NOMBRE por peticion expresa de la Coordinacion, para la
-    liquidacion de agosto. El resto del informe reporta el equipo en agregado.
+  * El ranking va CON NOMBRE por peticion expresa de la Coordinacion, como INSUMO
+    para la liquidacion, no como liquidacion. El resto del informe reporta el
+    equipo en agregado. Ver ANS_Medicion_Gestion_Pagos_Asesores.docx.
 
 Estilo: Lineamientos_Visuales_y_Comunicacion_CUN_Word.md
 """
@@ -57,7 +58,7 @@ callout(
      "nunca queda vacía, de modo que cuando la tipificación la hacía el robot del CRM, "
      "el sistema se la acreditaba igual a una persona.",
      "Las cifras de cumplimiento de la meta —sección 2— no cambian: no dependían de "
-     "esa columna. Sí cambian gestión, recaudo y la liquidación por asesor."],
+     "esa columna. Sí cambian gestión, recaudo y el detalle por asesor."],
     hexc_borde="C8102E",
 )
 
@@ -68,8 +69,8 @@ tabla(
     [["Gestiones de agosto", "61.767", "22.941", "Error de cálculo"],
      ["Asesores activos", "18", "14", "Error de cálculo"],
      ["Personas gestionadas", "18.716", "18.483", "Sin cambio relevante"],
-     ["Pagos registrados", "19.002", "9.281", "Cambio de criterio"],
-     ["Valor recaudado ($ MM)", "5.483,9", "2.408,8", "Cambio de criterio"],
+     ["Pagos registrados", "19.002", "9.280", "Cambio de criterio"],
+     ["Valor recaudado ($ MM)", "5.483,9", "2.408,0", "Cambio de criterio"],
      ["Efectividad", "32,1%", "18,1%", "Cambio de criterio"]],
     anchos=[6.2, 3.0, 2.8, 4.2],
     alinear_der=[1, 2],
@@ -85,7 +86,7 @@ vineta("el recaudo ya no cuenta cualquier pago de cartera asignada. Ahora exige 
        "persona haya sido gestionada y que el pago sea posterior a la primera gestión. "
        "De los $5.483,9 millones publicados, $1.849,5 eran de personas que nadie "
        "gestionó y $1.292,4 correspondían a pagos anteriores a que el asesor tocara el "
-       "caso. La cifra defendible es $2.408,8 millones.",
+       "caso. La cifra defendible es $2.408,0 millones.",
        "Cambio de criterio: ")
 vineta("bajo el criterio anterior siguen siendo 5.974 personas y 32,3% de efectividad, "
        "prácticamente lo publicado. La caída a 18,1% no es un desplome del equipo: es "
@@ -180,10 +181,10 @@ vineta("una de cada cuatro gestiones (26,0%) termina en «no contesta». Es el m
 D.salto_pagina()
 
 h1("5.  Recaudo atribuible a la gestión")
-kpi_row([("9.281", "PAGOS ATRIBUIBLES"),
-         ("5.767", "ESTUDIANTES"),
+kpi_row([("9.280", "PAGOS ATRIBUIBLES"),
+         ("5.766", "ESTUDIANTES"),
          ("$2.408", "MILLONES"),
-         ("$259.537", "TICKET PROMEDIO")])
+         ("$259.480", "TICKET PROMEDIO")])
 
 par("Un pago se atribuye a la gestión cuando la persona fue efectivamente gestionada y "
     "el pago es posterior a la primera gestión sobre ella. Las cifras son lo que los "
@@ -197,7 +198,7 @@ tabla(
     [["Publicado el 2 de septiembre", "19.002", "11.804", "5.483,9"],
      ["(–) De personas que nadie gestionó", "5.158", "2.963", "1.849,5"],
      ["(–) Pago anterior a la primera gestión", "4.855", "3.519", "1.292,4"],
-     ["(=) Atribuible a la gestión del equipo", "9.281", "5.767", "2.408,8"]],
+     ["(=) Atribuible a la gestión del equipo", "9.280", "5.766", "2.408,0"]],
     anchos=[7.4, 2.6, 2.7, 2.8],
     alinear_der=[1, 2, 3],
 )
@@ -225,39 +226,41 @@ vineta("el rango de 300 a 600 mil pesos aporta $1.127,2 millones, el 46,8% del v
 # La tabla de liquidacion tiene 19 filas: necesita pagina propia o Word la parte.
 D.salto_pagina()
 
-h1("6.  Liquidación por asesor — agosto 2026")
-par("Incluimos el detalle nominal por solicitud expresa de la Coordinación, para efectos "
-    "de liquidación. Los cuatro asesores con cero gestiones en agosto registran pagos "
+h1("6.  Detalle por asesor — insumo para la liquidación de agosto")
+par("Incluimos el detalle nominal por solicitud expresa de la Coordinación. Esta tabla es el "
+    "insumo base sobre el cual el área encargada aplica sus reglas de liquidación de "
+    "comisiones: no contiene cálculo de comisión alguno ni constituye por sí misma una "
+    "liquidación. Los cuatro asesores con cero gestiones en agosto registran pagos "
     "atribuibles porque la gestión que los originó ocurrió en un mes anterior.",
     after=4)
 
 tabla(
     ["Asesor", "Gestiones", "Personas", "Pagos", "$ MM", "Efect."],
-    [["Angie Estefanía Ortiz Ocampo", "3.388", "3.040", "1.006", "265,3", "21,9%"],
-     ["Evelyn Julieth Ruiz Mondragón", "1.711", "1.464", "936", "224,7", "39,1%"],
-     ["Daniel Steven Cifuentes Mahecha", "2.139", "1.616", "732", "183,3", "27,0%"],
-     ["Gizzel Tatiana Rincón Rodríguez", "1.562", "1.350", "700", "177,9", "32,4%"],
-     ["Danna Lorena Macías Lozano", "1.618", "1.401", "648", "177,7", "30,6%"],
-     ["Yenifer Andrea Salazar Aguirre", "1.229", "841", "595", "171,9", "45,0%"],
-     ["Nicolás Pérez Manzanares", "1.510", "1.378", "638", "161,4", "32,2%"],
-     ["Carol Alexandra Nieto Bello", "2.120", "1.668", "674", "161,3", "23,9%"],
-     ["Ana del Pilar Ávila Murillo", "1.561", "1.254", "594", "149,8", "27,2%"],
-     ["Laura Eliana Rivera Díaz", "1.410", "1.164", "620", "147,4", "28,0%"],
-     ["María Fernanda Nieto Jiménez", "1.130", "986", "564", "143,7", "39,7%"],
-     ["Ginna Magaly Herrera Varela", "1.503", "1.393", "525", "139,8", "23,7%"],
-     ["Yaqueline López Casas", "1.074", "962", "465", "124,9", "25,0%"],
-     ["Laidy Alejandra Romero Estupiñán", "986", "790", "333", "120,5", "25,1%"],
-     ["Ingrid Viviana Lara Pinzón", "0", "0", "111", "21,6", "—"],
-     ["Cristian Alexander Sanabria M.", "0", "0", "67", "19,0", "—"],
+    [["Angie Estefanía Ortiz Ocampo", "3.388", "3.040", "994", "259,8", "21,7%"],
+     ["Evelyn Julieth Ruiz Mondragón", "1.711", "1.464", "951", "230,6", "40,0%"],
+     ["Daniel Steven Cifuentes Mahecha", "2.139", "1.616", "720", "179,7", "26,6%"],
+     ["Danna Lorena Macías Lozano", "1.618", "1.401", "650", "178,4", "30,7%"],
+     ["Carol Alexandra Nieto Bello", "2.120", "1.668", "698", "176,1", "24,2%"],
+     ["Gizzel Tatiana Rincón Rodríguez", "1.562", "1.350", "691", "174,3", "32,1%"],
+     ["Yenifer Andrea Salazar Aguirre", "1.229", "841", "601", "173,8", "45,4%"],
+     ["Nicolás Pérez Manzanares", "1.510", "1.378", "631", "158,9", "32,1%"],
+     ["Laura Eliana Rivera Díaz", "1.410", "1.164", "636", "151,1", "28,6%"],
+     ["Ana del Pilar Ávila Murillo", "1.561", "1.254", "585", "145,7", "26,6%"],
+     ["María Fernanda Nieto Jiménez", "1.130", "986", "566", "144,8", "39,9%"],
+     ["Ginna Magaly Herrera Varela", "1.503", "1.393", "514", "133,1", "23,4%"],
+     ["Yaqueline López Casas", "1.074", "962", "461", "123,6", "24,7%"],
+     ["Laidy Alejandra Romero Estupiñán", "986", "790", "335", "120,7", "25,3%"],
+     ["Ingrid Viviana Lara Pinzón", "0", "0", "108", "20,6", "—"],
+     ["Cristian Alexander Sanabria M.", "0", "0", "66", "18,5", "—"],
      ["Delia Fernanda Muñoz Montoya", "0", "0", "54", "13,0", "—"],
      ["Daniel Esteban Ascencio Luna", "0", "0", "19", "5,3", "—"],
-     ["TOTAL EQUIPO", "22.941", "18.483", "9.281", "2.408,8", "18,1%"]],
+     ["TOTAL EQUIPO", "22.941", "18.483", "9.280", "2.408,0", "18,1%"]],
     anchos=[6.2, 2.2, 2.0, 1.9, 2.1, 2.0],
     alinear_der=[1, 2, 3, 4, 5],
 )
 par("", after=3)
-vineta("la efectividad no sigue al volumen. Yenifer Salazar convierte el 45,0% con 1.229 "
-       "gestiones, mientras que quien más gestiona convierte el 21,9%. Vale la pena "
+vineta("la efectividad no sigue al volumen. Yenifer Salazar convierte el 45,4% con 1.229 "
+       "gestiones, mientras que quien más gestiona convierte el 21,7%. Vale la pena "
        "revisar qué hace distinto el primer grupo antes de pedir más volumen al segundo.",
        "Volumen no es resultado: ")
 
@@ -265,9 +268,9 @@ vineta("la efectividad no sigue al volumen. Yenifer Salazar convierte el 45,0% c
 D.salto_pagina()
 
 h1("7.  Campaña de mensajes preventivos (WhatsApp)")
-kpi_row([("16.539", "IMPACTOS SIN ASESOR"),
-         ("3.073", "PERSONAS CON PAGO"),
-         ("$791", "MILLONES (TECHO)"),
+kpi_row([("15.641", "IMPACTOS SIN ASESOR"),
+         ("2.887", "PERSONAS CON PAGO"),
+         ("$744", "MILLONES (TECHO)"),
          ("0", "MENSAJES SMS")])
 
 par("Además de la gestión telefónica, la Coordinación opera una automatización de envío "
@@ -282,22 +285,22 @@ callout(
      "si fue entregado ni si fue leído: esa información la devuelve la API de WhatsApp "
      "Meta, que aún no está integrada.",
      "Sin fecha de envío tampoco podemos exigir que el pago sea posterior al mensaje, "
-     "que es la regla que sí aplicamos a la gestión de los asesores. Por eso los $791,9 "
+     "que es la regla que sí aplicamos a la gestión de los asesores. Por eso los $744,5 "
      "millones son un techo de impacto potencial por coincidencia, no recaudo demostrado, "
-     "y no deben compararse de igual a igual contra los $2.408,8 millones del equipo."],
+     "y no deben compararse de igual a igual contra los $2.408,0 millones del equipo."],
     hexc_borde="C8102E",
 )
 
 tabla(
     ["Plantilla", "Segmento", "Momento", "Impactos", "Personas", "$ MM"],
-    [["WA_P1_M03", "Nuevos", "3 días después", "3.756", "3.719", "80,0"],
-     ["WA_P1_M08", "Nuevos", "8 días después", "2.707", "2.597", "39,7"],
-     ["WA_P2_M08", "Antiguos", "8 días después", "2.633", "2.456", "69,9"],
-     ["WA_P2_M03", "Antiguos", "3 días después", "2.586", "2.562", "66,7"],
-     ["WA_P1_PRE", "Nuevos", "3 días antes", "1.815", "1.781", "168,0"],
-     ["WA_P2_PRE", "Antiguos", "3 días antes", "1.449", "1.430", "193,1"],
-     ["WA_P1_M01", "Nuevos", "1 día después", "913", "902", "86,1"],
-     ["WA_P2_M01", "Antiguos", "1 día después", "680", "673", "88,4"]],
+    [["WA_P1_M03", "Nuevos", "3 días después", "3.534", "3.514", "76,7"],
+     ["WA_P1_M08", "Nuevos", "8 días después", "2.578", "2.438", "35,1"],
+     ["WA_P2_M08", "Antiguos", "8 días después", "2.546", "2.373", "66,6"],
+     ["WA_P2_M03", "Antiguos", "3 días después", "2.393", "2.374", "62,5"],
+     ["WA_P1_PRE", "Nuevos", "3 días antes", "1.705", "1.676", "157,0"],
+     ["WA_P2_PRE", "Antiguos", "3 días antes", "1.364", "1.345", "179,8"],
+     ["WA_P1_M01", "Nuevos", "1 día después", "869", "862", "82,2"],
+     ["WA_P2_M01", "Antiguos", "1 día después", "652", "645", "84,6"]],
     anchos=[3.4, 2.8, 3.4, 2.4, 2.4, 2.0],
     alinear_der=[3, 4, 5],
 )
@@ -315,6 +318,12 @@ vineta("es tentador concluir que el mensaje preventivo convierte mejor que el de
        "activa (92,3% contra 0,1%), y la proporción de esas obligaciones cae justo en ese "
        "orden —M01 98%, PRE 48%, M03 22%, M08 18%—. Lo que se ve es la mezcla, no el "
        "momento del disparo.", "Por qué no decimos que el preventivo rinde más: ")
+vineta("estas cifras bajaron alrededor del 5% respecto de la extracción del 3 de "
+       "septiembre, sin que agosto haya cambiado. El campo Plantilla se sobrescribe en "
+       "cada corrida diaria, así que la campaña se mide sobre un dato que se borra a sí "
+       "mismo. Es una razón más para integrar la API: sin acuse del proveedor no podemos "
+       "reconstruir lo que ya reportamos.",
+       "El dato de campaña se degrada: ")
 vineta("comparando dentro de población equivalente, quien tenía plantilla asignada pagó "
        "en 57,1% contra 38,3% de quien no la tenía. La diferencia de 18,8 puntos es "
        "sugerente y justifica sostener la campaña, pero no es causal: la plantilla no se "
@@ -391,7 +400,7 @@ par("Siete frentes, ordenados por impacto sobre el saldo y por qué tan rápido 
 tabla(
     ["#", "Acción", "Meta de septiembre", "Responsable"],
     [["1", "Asignar la cartera de la meta sin responsable",
-      "4.034 estudiantes, $1.302,9 MM", "Coordinación"],
+      "3.800 estudiantes, $1.220,2 MM", "Coordinación"],
      ["2", "Adelantar la carga de gestión a la primera quincena",
       "50% del esfuerzo antes del día 15", "Coordinación"],
      ["3", "Depurar dato de contacto de los «no contesta»",
@@ -408,9 +417,9 @@ tabla(
 )
 par("", after=4)
 
-vineta("82.208 registros de 28.014 personas están marcados «reasignar en CRM» o «sin "
+vineta("80.235 registros de 27.442 personas están marcados «reasignar en CRM» o «sin "
        "asignar», y ninguno registra una sola gestión humana. Cruzados contra la meta "
-       "vigente son 4.034 estudiantes con $1.302,9 millones. Mientras no tengan dueño no "
+       "vigente son 3.800 estudiantes con $1.220,2 millones. Mientras no tengan dueño no "
        "entran en ningún indicador ni en ninguna llamada. Es la acción de mayor impacto y "
        "la más rápida: es una decisión de asignación, no un desarrollo.",
        "1. Cartera sin responsable: ")
@@ -442,18 +451,21 @@ vineta("el robot CUN DIGITAL generó 43.556 tipificaciones en agosto, casi el do
 
 callout(
     "Recomendación",
-    ["Asignar los 4.034 estudiantes de la meta que hoy no tienen responsable ($1.302,9 "
+    ["Asignar los 3.800 estudiantes de la meta que hoy no tienen responsable ($1.220,2 "
      "millones) antes del cierre de septiembre. Es la única acción del plan que no "
      "depende de terceros y libera cartera que hoy nadie está llamando.",
-     "Para la liquidación de agosto, usar la tabla de la sección 6 y no las cifras del "
-     "informe anterior: la diferencia por asesor es material."],
+     "Para el proceso de liquidación de agosto, tomar como insumo la tabla de la sección 6 y "
+     "no las cifras del informe anterior: la diferencia por asesor es material."],
     hexc_borde="00859B",
 )
 
 par("", after=2)
-nota("Fuentes: [Financiera].[Cartera_Meta_Comercial_Historico] y su snapshot de cierre, "
+nota("Reglas de cálculo formalizadas en el ANS de Medición de Gestión y Recaudo por Asesor "
+     "(PRC-FOR-010). Los entregables son material de referencia: la liquidación de comisiones "
+     "la realiza el área encargada aplicando sus propias reglas sobre esta base. "
+     "Fuentes: [Financiera].[Cartera_Meta_Comercial_Historico] y su snapshot de cierre, "
      "[ZOHO].[CRM].[Historico_tipificacion_contact] y [Financiera].[Cartera_CUN_Asesor_"
-     "Unico]. Extracción del 3 de septiembre de 2026. Cifras en millones de pesos "
+     "Unico]. Extracción del 7 de septiembre de 2026. Cifras en millones de pesos "
      "colombianos. El detalle por estudiante está en Base_Gestion_Asesores_Agosto_2026.xlsx.")
 
 D.guardar(SALIDA)

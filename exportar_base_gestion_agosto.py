@@ -25,14 +25,19 @@ Reglas de calculo corregidas:
                quien gestiono.
   * El dinero viene como 'CO$ 351,576.50' y sin sanear suma 0 en silencio.
 
+ALCANCE: este archivo es material de referencia. Es el insumo base sobre el cual el
+area encargada aplica sus reglas de liquidacion de comisiones; aqui no se calcula
+ninguna comision. Ver ANS_Medicion_Gestion_Pagos_Asesores.docx (PRC-FOR-010).
+
 Hojas:
   1. Fe_de_erratas        : cifra publicada contra cifra corregida, con la causa.
   2. Base_Gestion_Agosto  : las 22.941 gestiones humanas del mes, una por movimiento.
   3. Base_Pagos_Agosto    : los pagos de agosto atribuibles a la gestion.
   4. Resumen_Asesor       : gestiones, personas, pagos y efectividad por asesor.
   5. Resumen_Tipificacion : en que termina la gestion.
-  6. Sin_Asignar          : estudiantes DE LA META vigente sin asesor responsable.
-  7. Diccionario          : que significa cada columna.
+  6. Recaudo_Excluido     : que pagos quedaron fuera del atribuible, y por que.
+  7. Sin_Asignar          : estudiantes DE LA META vigente sin asesor responsable.
+  8. Diccionario          : que significa cada columna.
 
 Uso:  .venv/Scripts/python.exe exportar_base_gestion_agosto.py
 """
@@ -204,6 +209,12 @@ GROUP BY CASE WHEN G.GESTION_MARCA = 0
 """
 
 DICCIONARIO = [
+    ("ALCANCE DE ESTE ARCHIVO",
+     "Material de REFERENCIA. Entrega la medicion de la gestion ejecutada y del recaudo "
+     "atribuible con una definicion unica y auditable, como insumo base para que el area "
+     "encargada aplique sus reglas de liquidacion de comisiones. No contiene calculo de "
+     "comision alguno y ninguna cifra constituye por si misma una liquidacion. Reglas "
+     "formalizadas en el ANS de Medicion de Gestion y Recaudo por Asesor (PRC-FOR-010)."),
     ("ASESOR", "Quien EJECUTO la gestion (Hecho_por del historico de tipificacion). No es Asesor_Unico: ese campo dice de quien es la cartera, no quien la trabajo."),
     ("ASESOR_ASIGNADO", "Asesor_Unico: el responsable asignado del registro. Puede diferir de ASESOR cuando gestiona alguien distinto al dueno."),
     ("FECHA_GESTION", "Momento de la tipificacion. Una fila = una gestion. Excluye las hechas por CUN DIGITAL y PENAGOS, que son cuentas de sistema."),
