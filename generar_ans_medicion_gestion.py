@@ -35,7 +35,7 @@ from estilo_cun import (DocumentoCUN, GRIS_INST,                 # noqa: E402
 sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
 SALIDA = "ANS_Medicion_Gestion_Pagos_Asesores.docx"
-LOGO = None                     # ruta a un .png del logo CUN, si se consigue
+LOGO = "logo_cun.png"           # extraido del docx que el coordinador diligencio a mano
 FECHA = "07/09/2026"
 
 VERDE_CUN = RGBColor(0x5A, 0xA7, 0x00)      # titulos de seccion del formulario
@@ -242,11 +242,17 @@ par("Establecer las reglas de negocio, los términos y las condiciones bajo los 
     "proveedora (Coordinación de Analítica Financiera — Ingeniería de Desarrollo Financiero) "
     "calcula, publica y comunica mensualmente la medición de la gestión de cobranza y del "
     "recaudo atribuible a cada asesor, para que el área cliente (Dirección Financiera — Gestión "
-    "de Cartera) realice el seguimiento del equipo y la liquidación del período con una "
-    "definición única, verificable y reproducible.")
+    "de Cartera) realice el seguimiento del equipo y como referencia para la liquidación "
+    "del período con una definición única, verificable y reproducible.")
 par("Este acuerdo complementa el ANS de «Meta mensual de cartera estudiantil vencida»: aquel "
     "define QUÉ cartera se debe gestionar; este define CÓMO se mide la gestión ejecutada sobre "
     "ella y qué recaudo se le atribuye a cada asesor.")
+rotulo("Alcance de los entregables: ",
+       "el informe mensual en Word y la base en Excel son MATERIAL DE REFERENCIA. Entregan una medición homogénea, verificable y auditable de la gestión "
+       "ejecutada y del recaudo atribuible, para que el Coordinador de Recaudo y Permanencia la "
+       "tome como insumo base y adelante el proceso que corresponda conforme a las reglas de "
+       "liquidación de comisiones definidas por el área encargada. Analítica Financiera no calcula "
+       "comisiones, no define sus reglas ni emite concepto sobre su aplicación.")
 
 # ══════════════════════════════════════════ 1
 h_seccion("1. Servicio o Entregable")
@@ -262,10 +268,13 @@ numerado(1, "Columnas de medición en la tabla materializada → ",
          "indicador de gestión, tablero o informe.")
 numerado(2, "Informe ejecutivo de cierre mensual → ",
          "documento Word con el cumplimiento de la meta, la gestión del equipo en agregado, el "
-         "recaudo atribuible, el ritmo de la gestión y el plan de acción del mes siguiente.")
+         "recaudo atribuible, el ritmo de la gestión y el plan de acción del mes siguiente. Es material "
+         "de referencia para el seguimiento del equipo, no un acto de liquidación.")
 numerado(3, "Base de gestión por asesor → ",
          "archivo Excel con el detalle nominal por asesor (gestiones, personas gestionadas, "
-         "pagos atribuibles y valor) para efectos de liquidación y seguimiento. Contiene datos "
+         "pagos atribuibles y valor). Constituye el insumo base sobre el cual el área encargada "
+         "aplica sus reglas de liquidación de comisiones; no incluye cálculo de comisión alguno. "
+         "Contiene datos "
          "personales de estudiantes y de empleados, por lo que se entrega por canal interno y "
          "no se publica en repositorios ni se versiona en control de código.")
 
@@ -327,6 +336,12 @@ bullet("el informe ejecutivo reporta el equipo en agregado y no nombra asesores.
        "nominal se entrega únicamente en la base de trabajo del coordinador, por solicitud "
        "expresa y por canal interno, por tratarse de evaluación de personal.",
        "Confidencialidad del detalle nominal: ")
+bullet("los entregables son material de referencia. Analítica Financiera mide y publica la "
+       "gestión ejecutada y el recaudo atribuible con una definición única; la liquidación de "
+       "comisiones la realiza el área encargada aplicando sus propias reglas sobre esa base. "
+       "Este ANS no define, no calcula ni valida comisiones, y ninguna cifra aquí publicada "
+       "constituye por sí misma una liquidación.",
+       "Separación de responsabilidades: ")
 bullet("cualquier cambio en estas definiciones se documenta en las reglas de negocio y se "
        "comunica a la contraparte antes de publicar cifras bajo el criterio nuevo. Un cambio de "
        "criterio que altere una cifra ya entregada obliga a emitir fe de erratas.",
